@@ -21,7 +21,7 @@ Postgres endpoint: 10.1.1.100 port 5000
 `ssh -p 3004 postgres@localhost # 10.1.1.13	db_backup` \
 `ssh -p 3005 postgres@localhost # 10.1.1.14	db_proxy1` \
 `ssh -p 3006 postgres@localhost # 10.1.1.15	db_proxy2` \
-`ssh -p 3007 postgres@localhost # 10.1.1.16	db_empty` \
+`ssh -p 3007 postgres@localhost # 10.1.1.16	db_empty`
 
 ## How to start and use:
 `cd HA_Lab/ ; ./build_lab.sh`
