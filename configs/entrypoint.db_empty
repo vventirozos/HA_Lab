@@ -1,0 +1,6 @@
+#!/bin/bash
+sudo service ssh start 
+mkdir -p /home/postgres/logs/
+ln -s /home/postgres/pgdata/log/postgresql.log /home/postgres/logs/postgresql.log
+rm -rf /home/postgres/pgdata/*
+tail -f /dev/null

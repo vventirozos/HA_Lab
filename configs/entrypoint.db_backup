@@ -1,0 +1,10 @@
+#!/bin/bash
+sudo service ssh start
+mkdir -p /home/postgres/logs/
+echo "export PGHOST=10.1.1.100"  >> ~/.bashrc
+echo "export PGPORT=5000"  >> ~/.bashrc
+sleep 60
+pgbackrest --config=/home/postgres/configs/pgbackrest.backup.conf --log-path=/home/postgres/logs/ --stanza=ha_lab stanza-create && \
+pgbackrest --config=/home/postgres/configs/pgbackrest.backup.conf --log-path=/home/postgres/logs/ --stanza=ha_lab --type=full backup 
+tail -f /dev/null
+

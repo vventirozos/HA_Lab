@@ -1,0 +1,8 @@
+#!/bin/bash
+sudo sysctl -w net.ipv4.ip_nonlocal_bind=1 >/dev/null
+sudo service ssh start
+mkdir -p /home/postgres/logs/
+haproxy -- /home/postgres/configs/haproxy.conf > /home/postgres/logs/haproxy.log 2>&1 &
+sleep 2
+sudo keepalived -f /home/postgres/configs/keepalived.db_proxy1.conf > /home/postgres/logs/keepalived.log 2>&1 &
+tail -f /dev/null

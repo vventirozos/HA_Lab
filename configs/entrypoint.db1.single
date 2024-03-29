@@ -1,0 +1,11 @@
+#!/bin/bash
+sudo service ssh start 
+mkdir -p /home/postgres/logs/
+#
+echo "archive_command = '/bin/true'" >> /home/postgres/pgdata/postgresql.conf
+echo "max_wal_size = '4GB'" >> /home/postgres/pgdata/postgresql.conf 
+echo "shared_buffers = '2GB'" >> /home/postgres/pgdata/postgresql.conf
+#
+/home/postgres/pgsql/bin/pg_ctl -D /home/postgres/pgdata start 
+ln -s /home/postgres/pgdata/log/postgresql.log /home/postgres/logs/postgresql.log
+tail -f /dev/null

@@ -1,0 +1,78 @@
+scope: postgres 
+namespace: /ha_lab/ 
+name: db2
+restapi: 
+    listen: 10.1.1.11:8008 
+    connect_address: 10.1.1.11:8008 
+etcd: 
+    hosts: 10.1.1.10:2379,10.1.1.11:2379,10.1.1.12:2379
+bootstrap: 
+    dcs: 
+        ttl: 30 
+        loop_wait: 10 
+        retry_timeout: 10 
+        maximum_lag_on_failover: 1048576 
+        postgresql: 
+            use_pg_rewind: true 
+    initdb: 
+    - encoding: UTF8 
+    - data-checksums 
+    pg_hba: 
+    - local replication all trust
+    - host replication all 127.0.0.1/32 trust 
+    - host all all 10.1.1.1/16 trust
+    - host repliation all 10.1.1.1/16 trust
+    users: 
+        admin: 
+            password: passwd
+            # Password must meet internal password policies of your company
+            options: 
+                - createrole 
+                - createdb 
+postgresql: 
+    listen: 10.1.1.11:5432
+    connect_address: 10.1.1.11:5432
+    data_dir: /home/postgres/pgdata
+    #in this folder the database files will be stored 
+    pgpass: /tmp/pgpass 
+    bin_dir: /home/postgres/pgsql/bin
+    authentication: 
+        replication: 
+            username: postgres
+            password: noneed
+            # This is the user used internally by PostgreSQL for cluster replication 
+            # Password must meet internal password policies of your company 
+        superuser: 
+            username: postgres 
+            password: noneed
+            # This initializes the password for the postgres admin user 
+            # Password must meet internal password policies of your company 
+    parameters: 
+        unix_socket_directories: '/tmp' 
+        #From here on the parameters represent the mandatory OO settings 
+        shared_buffers: '1GB' 
+        # EX: shared_buffers: '4GB' 
+        effective_cache_size: '2GB' 
+        # EX: effective_cache_size: '8GB' 
+        work_mem: '256MB' 
+        maintenance_work_mem: '512MB' 
+        deadlock_timeout: '10s' 
+        archive_command: pgbackrest --config=/home/postgres/configs/pgbackrest.archive.conf --stanza=ha_lab archive-push "%p"
+        recovery_target_timeline: latest
+        restore_command: pgbackrest --config=/home/postgres/configs/pgbackrest.archive.conf --stanza=ha_lab archive-get %f "%p"
+    use_pg_rewind: false
+    use_slots: true
+    create_replica_methods:
+        - pgbackrest
+        - basebackup
+    pgbackrest:
+        command: pgbackrest --config=/home/postgres/configs/pgbackrest.archive.conf --stanza=ha_lab --delta restore
+        keep_data: True
+        no_params: True
+    basebackup:
+        checkpoint: 'fast'
+tags: 
+    nofailover: false 
+    noloadbalance: false 
+    clonefrom: false 
+    nosync: false 

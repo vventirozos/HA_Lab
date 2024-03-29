@@ -1,0 +1,168 @@
+services:
+  db1:
+    hostname: db1
+    image: "lab_host"
+    extra_hosts:
+      - "db1:10.1.1.10"
+      - "db2:10.1.1.11"
+      - "db3:10.1.1.12"
+      - "db_backup:10.1.1.13"
+      - "db_proxy1:10.1.1.14"
+      - "db_proxy2:10.1.1.15"
+      - "db_empty:10.1.1.16"
+      - "db_virtual:10.1.1.100"
+    ports:
+      - "3001:22"
+    tty: true    
+    networks:
+      hagarden:
+        ipv4_address: 10.1.1.10
+    volumes:
+      - ../configs:/home/postgres/configs
+    entrypoint: "/home/postgres/configs/entrypoint.db1"
+  db2:
+    hostname: db2
+    image: "lab_host"
+    extra_hosts:
+      - "db1:10.1.1.10"
+      - "db2:10.1.1.11"
+      - "db3:10.1.1.12"
+      - "db_backup:10.1.1.13"
+      - "db_proxy1:10.1.1.14"
+      - "db_proxy2:10.1.1.15"
+      - "db_empty:10.1.1.16"
+      - "db_virtual:10.1.1.100"
+    depends_on:
+      - db1
+    ports:
+      - "3002:22"
+    tty: true
+    networks:
+      hagarden:
+        ipv4_address: 10.1.1.11
+    volumes:
+      - ../configs:/home/postgres/configs
+    entrypoint: "/home/postgres/configs/entrypoint.db2"
+  db3:
+    hostname: db3
+    image: "lab_host"
+    extra_hosts:
+      - "db1:10.1.1.10"
+      - "db2:10.1.1.11"
+      - "db3:10.1.1.12"
+      - "db_backup:10.1.1.13"
+      - "db_proxy1:10.1.1.14"
+      - "db_proxy2:10.1.1.15"
+      - "db_empty:10.1.1.16"
+      - "db_virtual:10.1.1.100"
+    depends_on:
+      - db1
+    ports:
+      - "3003:22"
+    tty: true
+    networks:
+      hagarden:
+        ipv4_address: 10.1.1.12
+    volumes:
+      - ../configs:/home/postgres/configs
+    entrypoint: "/home/postgres/configs/entrypoint.db3"
+  
+  db_backup:
+    hostname: db_backup
+    image: "lab_host"
+    extra_hosts:
+      - "db1:10.1.1.10"
+      - "db2:10.1.1.11"
+      - "db3:10.1.1.12"
+      - "db_backup:10.1.1.13"
+      - "db_proxy1:10.1.1.14"
+      - "db_proxy2:10.1.1.15"
+      - "db_empty:10.1.1.16"
+      - "db_virtual:10.1.1.100"
+    depends_on:
+      - db1
+      - db2
+      - db3
+    ports:
+      - "3004:22"
+    tty: true
+    networks:
+      hagarden:
+        ipv4_address: 10.1.1.13
+    volumes:
+      - ../configs:/home/postgres/configs
+    entrypoint: "/home/postgres/configs/entrypoint.db_backup"
+  db_proxy1:
+    hostname: db_proxy1
+    privileged: true
+    image: "lab_host"
+    extra_hosts:
+      - "db1:10.1.1.10"
+      - "db2:10.1.1.11"
+      - "db3:10.1.1.12"
+      - "db_backup:10.1.1.13"
+      - "db_proxy1:10.1.1.14"
+      - "db_proxy2:10.1.1.15"
+      - "db_empty:10.1.1.16"
+      - "db_virtual:10.1.1.100"
+    ports:
+      - "3005:22"
+    tty: true
+    networks:
+      hagarden:
+        ipv4_address: 10.1.1.14
+    volumes:
+      - ../configs:/home/postgres/configs
+    entrypoint: "/home/postgres/configs/entrypoint.db_proxy1"
+  db_proxy2:
+    hostname: db_proxy2
+    privileged: true
+    image: "lab_host"
+    extra_hosts:
+      - "db1:10.1.1.10"
+      - "db2:10.1.1.11"
+      - "db3:10.1.1.12"
+      - "db_backup:10.1.1.13"
+      - "db_proxy1:10.1.1.14"
+      - "db_proxy2:10.1.1.15"
+      - "db_empty:10.1.1.16"
+      - "db_virtual:10.1.1.100"
+    ports:
+      - "3006:22"
+    tty: true
+    networks:
+      hagarden:
+        ipv4_address: 10.1.1.15
+    volumes:
+      - ../configs:/home/postgres/configs
+    entrypoint: "/home/postgres/configs/entrypoint.db_proxy2"
+  db_empty:
+    hostname: db_empty
+    privileged: true
+    image: "lab_host"
+    extra_hosts:
+      - "db1:10.1.1.10"
+      - "db2:10.1.1.11"
+      - "db3:10.1.1.12"
+      - "db_backup:10.1.1.13"
+      - "db_proxy1:10.1.1.14"
+      - "db_proxy2:10.1.1.15"
+      - "db_empty:10.1.1.16"
+      - "db_virtual:10.1.1.100"
+    ports:
+      - "3007:22"
+    tty: true
+    networks:
+      hagarden:
+        ipv4_address: 10.1.1.16
+    volumes:
+      - ../configs:/home/postgres/configs
+    entrypoint: "/home/postgres/configs/entrypoint.db_empty"
+
+networks:
+  hagarden:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.1.0.0/16
+         gateway: 10.1.1.1

@@ -1,0 +1,22 @@
+services:
+  db1:
+    hostname: db1
+    image: "lab_host"
+    extra_hosts:
+      - "db1:10.1.1.10"
+    ports:
+      - "3001:22"
+    tty: true    
+    networks:
+      hagarden:
+        ipv4_address: 10.1.1.10
+    volumes:
+      - ../configs:/home/postgres/configs
+    entrypoint: "/home/postgres/configs/entrypoint.db1.single"
+networks:
+  hagarden:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.1.0.0/16
+         gateway: 10.1.1.1
