@@ -1,3 +1,3 @@
 cd image/ ; ./build.sh
-cd ../composer ; docker-compose up -d
+cd ../composer ; docker-compose up 
  
