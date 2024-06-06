@@ -17,15 +17,15 @@ RUN apt update && \
 
 ENV TZ="Europe/Athens"
 
-RUN apt update && \
+RUN apt update && apt -yq upgrade && \
     apt install -yq \
 		sudo wget apt-transport-https \
 		joe less build-essential libreadline-dev \
 		zlib1g-dev flex bison libxml2-dev libxslt-dev \
 		libssl-dev ssh openssh-server screen git net-tools \
-		locales kmod pip etcd haproxy watchdog keepalived psmisc \
+		locales kmod pip haproxy watchdog keepalived psmisc \
 		systemtap sysstat systemtap-sdt-dev pkg-config iotop gdb strace \
-		lsof bpftrace && \
+		lsof bpftrace etcd-server etcd-discovery etcd-client && \
 	useradd -c /home/$PGUSER -ms /bin/bash $PGUSER
 
 run locale-gen en_US.UTF-8
