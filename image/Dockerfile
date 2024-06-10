@@ -25,7 +25,8 @@ RUN apt update && apt -yq upgrade && \
 		libssl-dev ssh openssh-server screen git net-tools \
 		locales kmod pip haproxy watchdog keepalived psmisc \
 		systemtap sysstat systemtap-sdt-dev pkg-config iotop gdb strace \
-		lsof bpftrace etcd-server etcd-discovery etcd-client && \
+		lsof bpftrace etcd-server etcd-discovery etcd-client curl \
+		libcurl4-openssl-dev  liblz4-dev  libzstd-dev && \
 	useradd -c /home/$PGUSER -ms /bin/bash $PGUSER
 
 run locale-gen en_US.UTF-8
@@ -41,6 +42,9 @@ run mkdir $HOME/.ssh/ && \
 		ls -1 *.tar.gz |xargs tar zxfv && \
 		cd postgres* ; ./configure --enable-dtrace --prefix=$PGBINDIR --with-openssl; make ; make install ; cd contrib ; make ; make install ;
 
+RUN git clone https://github.com/citusdata/citus.git
+RUN export PATH=$PGBINDIR/bin:$PATH && cd /home/postgres/citus ; ./configure ; make ; make install-all
+
 run sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 run wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 RUN sudo apt update && sudo apt install -y pgbackrest patroni
@@ -55,6 +59,7 @@ RUN echo "export PGDATA=$PGDATADIR" >> ~/.bashrc && \
 	echo "logging_collector = on" >> $PGDATADIR/postgresql.conf && \
 	echo "log_filename = 'postgresql.log'" >> $PGDATADIR/postgresql.conf && \
 	echo "archive_mode = on" >> $PGDATADIR/postgresql.conf && \
+	echo "shared_preload_libraries = 'citus'" >> $PGDATADIR/postgresql.conf && \
 	echo "archive_command = 'pgbackrest --config=/home/postgres/configs/pgbackrest.archive.conf --stanza=ha_lab archive-push %p'" >> $PGDATADIR/postgresql.conf && \
 	echo "host    all             all             10.1.1.1/16            trust" >> $PGDATADIR/pg_hba.conf && \
 	echo "host    replication     all             10.1.1.1/16            trust" >> $PGDATADIR/pg_hba.conf

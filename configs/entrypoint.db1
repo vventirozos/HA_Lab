@@ -4,4 +4,7 @@ mkdir -p /home/postgres/logs/
 ln -s /home/postgres/pgdata/log/postgresql.log /home/postgres/logs/postgresql.log
 /usr/bin/etcd --config-file /home/postgres/configs/etcd.db1.conf > /home/postgres/logs/etcd.db1.log 2>&1 &
 patroni /home/postgres/configs/patroni.db1.yml > /home/postgres/logs/patroni.db1.log 2>&1 &
+sleep 10
+/home/postgres/pgsql/bin/psql -c "create extension citus" template1
+/home/postgres/pgsql/bin/psql -c "create extension citus" postgres
 tail -f /dev/null
