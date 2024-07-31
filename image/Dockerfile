@@ -1,8 +1,8 @@
-#docker run -dit --net garden --ip 10.0.0.2 -p 3001:22 --name db_server1 db_server
+#docker RUN -dit --net garden --ip 10.0.0.2 -p 3001:22 --name db_server1 db_server
 
 FROM ubuntu:latest
 
-MAINTAINER v.ventirozos@evolmonkey.com
+# MAINTAINER v.ventirozos@evolmonkey.com
 
 ### CHANGE THE FOLLOWING 3 PARAMETERS IF YOU WANNA CHANGE USER, POSTGRES INSTALL AND PGDATA DIRECTORIES ###
 
@@ -26,16 +26,16 @@ RUN apt update && apt -yq upgrade && \
 		locales kmod pip haproxy watchdog keepalived psmisc \
 		systemtap sysstat systemtap-sdt-dev pkg-config iotop gdb strace \
 		lsof bpftrace etcd-server etcd-discovery etcd-client curl \
-		libcurl4-openssl-dev  liblz4-dev  libzstd-dev && \
+		libcurl4-openssl-dev liblz4-dev libzstd-dev iputils-ping && \
 	useradd -c /home/$PGUSER -ms /bin/bash $PGUSER
 
-run locale-gen en_US.UTF-8
-run echo "$PGUSER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN locale-gen en_US.UTF-8
+RUN echo "$PGUSER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 USER $PGUSER
 WORKDIR /home/$PGUSER
 
-run mkdir $HOME/.ssh/ && \
+RUN mkdir $HOME/.ssh/ && \
 	chmod 700 $HOME/.ssh/ && \
 	echo "Host *" > $HOME/.ssh/config ; echo " StrictHostKeyChecking no" >> $HOME/.ssh/config && \
 	wget https://www.postgresql.org/ftp/latest/ -q -O - |grep "tar.gz" |grep -v md5 |grep -v sha256 |awk -F "\"" '{print $2}' |xargs wget && \
@@ -45,8 +45,8 @@ run mkdir $HOME/.ssh/ && \
 RUN git clone https://github.com/citusdata/citus.git
 RUN export PATH=$PGBINDIR/bin:$PATH && cd /home/postgres/citus ; ./configure ; make ; make install-all
 
-run sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-run wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+RUN sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 RUN sudo apt update && sudo apt install -y pgbackrest patroni
 RUN mkdir $PGDATADIR && $PGBINDIR/bin/initdb -k -D $PGDATADIR
 
@@ -66,7 +66,7 @@ RUN echo "export PGDATA=$PGDATADIR" >> ~/.bashrc && \
 
 EXPOSE 5432
 EXPOSE 22 
-expose 5000
+EXPOSE 5000
 EXPOSE 8008
 
 
