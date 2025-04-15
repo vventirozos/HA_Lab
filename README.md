@@ -19,7 +19,7 @@ client oriented tests, WAL archive destination etc..
 
 All containers have sshd running and they all expose ports for it :
 
-Postgres endpoint: 10.1.1.100 port 5000 eg:
+Postgres endpoint: 10.1.1.100 port 5000 eg: \
 `postgres@db_empty:~$ psql -h 10.1.1.100 -p 5000 postgres` \
 \
 \
