@@ -9,12 +9,15 @@ containing cluster information such as configuration, health, and current status
 pgbackrest for backups and WAL archiving that will be leveraged by Patroni to re-sync or
 initiate new standbys, HAProxy for load ballancing and for providing a single endpoint for
 PostgreSQL connections and keepalived for IP switchover between HAProxy servers.
+Citus is compiled and installed in the image but there is nothing using it as of now.
 Lab is also designed to use a single custom image that includes all the software nessesary to
 fullfil any role. All configuration is centralized in a single directory that each container has mapped
 as (../configs:/home/postgres/configs).
+
 All containers have sshd running and they all expose ports for it :
 
-Postgres endpoint: 10.1.1.100 port 5000
+Postgres endpoint: 10.1.1.100 port 5000 \
+\
 `ssh -p 3001 postgres@localhost # 10.1.1.10	db1` \
 `ssh -p 3002 postgres@localhost # 10.1.1.11	db2` \
 `ssh -p 3003 postgres@localhost # 10.1.1.12	db3` \

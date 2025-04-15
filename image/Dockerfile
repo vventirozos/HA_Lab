@@ -4,8 +4,10 @@ FROM ubuntu:latest
 
 # MAINTAINER v.ventirozos@evolmonkey.com
 
-### CHANGE THE FOLLOWING 3 PARAMETERS IF YOU WANNA CHANGE USER, POSTGRES INSTALL AND PGDATA DIRECTORIES ###
+### CHANGE THE FOLLOWING 4 PARAMETERS IF YOU WANNA CHANGE ###
+### Postgres VERSION, USER, POSTGRES INSTALLATION AND PGDATA DIRECTORIES ###
 
+ENV PGVERSION=17.4
 ENV PGUSER=postgres
 ENV PGBINDIR=/home/$PGUSER/pgsql
 ENV PGDATADIR=/home/$PGUSER/pgdata
@@ -38,9 +40,10 @@ WORKDIR /home/$PGUSER
 RUN mkdir $HOME/.ssh/ && \
 	chmod 700 $HOME/.ssh/ && \
 	echo "Host *" > $HOME/.ssh/config ; echo " StrictHostKeyChecking no" >> $HOME/.ssh/config && \
-	wget https://www.postgresql.org/ftp/latest/ -q -O - |grep "tar.gz" |grep -v md5 |grep -v sha256 |awk -F "\"" '{print $2}' |xargs wget && \
-		ls -1 *.tar.gz |xargs tar zxfv && \
-		cd postgres* ; ./configure --enable-dtrace --prefix=$PGBINDIR --with-openssl; make ; make install ; cd contrib ; make ; make install ;
+	cd $HOME && \
+	wget https://ftp.postgresql.org/pub/source/v$PGVERSION/postgresql-$PGVERSION.tar.gz && \
+	tar zxfv /home/postgres/postgresql-$PGVERSION.tar.gz 
+RUN cd postgres* ; ./configure --enable-dtrace --prefix=$PGBINDIR --with-openssl; make ; make install ; cd contrib ; make ; make install ;
 
 RUN git clone https://github.com/citusdata/citus.git
 RUN export PATH=$PGBINDIR/bin:$PATH && cd /home/postgres/citus ; ./configure ; make ; make install-all
